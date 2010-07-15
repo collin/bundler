@@ -599,22 +599,22 @@ module Bundler
         else
           Bundler.ui.info "Fetching #{uri}"
           FileUtils.mkdir_p(cache_path.dirname)
-          git %|clone "#{uri}" "#{cache_path}" --bare --no-hardlinks|
+          git %|clone "#{uri}" "#{cache_path}" --bare --depth 1 --no-hardlinks |
         end
       end
 
       def checkout
         unless File.exist?(path.join(".git"))
           FileUtils.mkdir_p(path.dirname)
-          git %|clone --no-checkout "#{cache_path}" "#{path}"|
+          git %|clone --depth 1 --no-checkout  "#{cache_path}" "#{path}"|
         end
         Dir.chdir(path) do
-          git "fetch --force --quiet"
-          git "reset --hard #{revision}"
+          git %|fetch --force --quiet --depth 1|
+          git %|reset --hard #{revision}|
 
           if @submodules
-            git "submodule init"
-            git "submodule update"
+            git %|submodule init|
+            git %|submodule update|
           end
         end
       end
